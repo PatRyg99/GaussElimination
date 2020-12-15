@@ -5,11 +5,6 @@ using SparseArrays
 
 export load_matrice, load_vector
 
-struct SideVector
-    size::Integer
-    data::Vector
-end
-
 struct SparseMatrice
     size::Integer
     sub_size::Integer
@@ -20,22 +15,18 @@ function load_vector(file_path::String)
     open(file_path) do file
         
         size = 0
-        data = []
+        data = Float64[]
 
         for (idx, line) in enumerate(eachline(file))
             
-            # First row in file holds size
-            if idx == 1
-                size = parse(Int, line)
-            
-            # Other rows hold values
-            else
+            # First row in file holds size - omit
+            if idx != 1
                 push!(data, parse(Float64, line))
             end
         end
         
         # Create custom SideVector type
-        vector = SideVector(size, Float64.(vec(data)))
+        vector = vec(data)
         println("Loaded vector with size $size.")
 
         return vector
@@ -49,22 +40,22 @@ function load_matrice(file_path::String)
         sub_size = 0
         
         # Vectors to build a sparse array from
-        I = []
-        J = []
-        V = []
+        I = Int64[]
+        J = Int64[]
+        V = Float64[]
         
         for (idx, line) in enumerate(eachline(file))
             line = split(line)
             
             # First row in file holds size and sub_size
             if idx == 1
-                size = parse(Int, line[1])
-                sub_size = parse(Int ,line[2])
+                size = parse(Int64, line[1])
+                sub_size = parse(Int64,line[2])
             
             # Other rows hold [i, j, value] tuples
             else
-                push!(I, parse(Int, line[1]))
-                push!(J, parse(Int, line[2]))
+                push!(I, parse(Int64, line[1]))
+                push!(J, parse(Int64, line[2]))
                 push!(V, parse(Float64, line[3]))
             end
         end
