@@ -4,58 +4,89 @@ module blocksys
 include("./structs/matrice.jl")
 using .Matrice: SparseMatrice
 
-function gauss_elimination(A, b::Vector, main_element=nothing)
+function gauss_elimination(A, b::Vector; partial_choice::Bool = false)
 
     n = A.size
     l = A.sub_size
 
-    # If no main element chosen perform classic algorithm
-    if isnothing(main_element)
-        
-        rows = l
+    rows = l
 
-        # First loop goes through all the rows - O(n)
-        for k in 1:(n - 1)
+    # First loop goes through all the rows - O(n)
+    for k in 1:(n - 1)
+
+        # Partial choice of main element
+        if partial_choice
+
+            idx = k
+            max = abs(A.data[k][k - A.shift[k]])
+
+            end_row = k + l - (k % l) - 1
             
-            # Update only up to l next rows
-            if k >= rows
-                rows += l
-            end
+            # Iterate over rows with non-zeros and check for column max
+            for i in k+1:end_row
 
-            # Second loop needs to update only up to  rows - O(l)
-            for i in (k + 1):rows
-                
-                m = A.data[i, k] / A.data[k, k]
+                v = abs(A.data[i][k - A.shift[i]])
 
-                # Update only up to l next columns
-                cols = min(rows + l, n)
-                
-                # Third loop needs to update only up to l columns - O(l)
-                for j in (k + 1):cols
-                    A.data[i, j] = A.data[i, j] - m * A.data[k, j]
+                if max < v
+                    idx = i
+                    max = v  
                 end
-
-                b[i] = b[i] - m * b[k]
             end
+            
+            # Swap i-th row with k-th
+            if idx != k
+
+                temp_A = A.data[k]
+                A.data[k] = A.data[idx]
+                A.data[idx] = temp_A
+
+                temp_shift = A.shift[k]
+                A.shift[k] = A.shift[idx]
+                A.shift[idx] = temp_shift
+
+                temp_b = b[k]
+                b[k] = b[idx]
+                b[idx] = temp_b
+            end
+        end
+        
+        if k >= rows
+            rows += l
+        end
+
+        # Second loop needs to update only up to l rows - O(l)
+        for i in (k + 1):rows
+            
+            m = A.data[i][k - A.shift[i]] / A.data[k][k - A.shift[k]]
+            cols = min(A.shift[k] + length(A.data[k]), n)
+            
+            # Third loop needs to update only up to 3*l - O(l)
+            # Longest row in array has 3*l columns due to possible swaps
+            for j in (k + 1):cols
+                A.data[i][j - A.shift[i]] -= m * A.data[k][j - A.shift[k]]
+            end
+
+            b[i] -= m * b[k]
         end
     end
 
     # Compute vector x, having an upper triangle matrice
     x = Vector{Float64}(undef, length(b))
-    x[n] = b[n] / A.data[n, n]
+    x[n] = b[n] / A.data[n][n - A.shift[n]]
 
     # Iterate from last row up - O(n)
     for k in reverse(1:(n-1))
         
         x[k] = b[k]
-        end_col = min(k + l, n) 
+        end_col = min(A.shift[k] + length(A.data[k]), n)
 
-        # Iterate over columns, only up to l - O(l)
+        # Iterate over columns, only up to 3*l - O(l)
+        # Longest row in array has 3*l columns due to possible swaps
         for j in (k + 1):end_col
-            x[k] -= A.data[k, j] * x[j]
+            x[k] -= A.data[k][j - A.shift[k]] * x[j]
         end
 
-        x[k] /= A.data[k, k]
+        x[k] /= A.data[k][k - A.shift[k]]
     end
 
     return x
