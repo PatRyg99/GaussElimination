@@ -1,6 +1,0 @@
-{
-    "jupyter.jupyterServerType": "local",
-    "[julia]": {
-        "editor.defaultFormatter": "singularitti.vscode-julia-formatter"
-    },
-}
