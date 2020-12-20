@@ -1,5 +1,5 @@
 # Patryk Rygiel
-module Matrice
+module DataStructs
 
 using SparseArrays
 
@@ -30,8 +30,6 @@ function load_vector(file_path::String)
         
         # Create custom SideVector type
         vector = vec(data)
-        println("Loaded vector with size $(length(vector)).")
-
         return vector
     end
 end
@@ -68,8 +66,6 @@ function load_sparse_matrice(file_path::String)
 
         # Create custom SparseMatrice type
         mat = sparse(I, J, V)
-        println("Loaded matrice with size $size and sub_size $(sub_size).")
-
         return mat
     end
 end
@@ -123,10 +119,8 @@ function load_row_matrice(file_path::String)
 
         # Create custom Matrice type
         mat = RowMatrice(size, sub_size, shift, data)
-        println("Loaded matrice with size $size and sub_size $(sub_size).")
-
         return mat
     end
 end
 
-end # end matrice
+end # end DataStructs
