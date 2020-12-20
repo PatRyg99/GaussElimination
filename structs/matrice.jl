@@ -94,11 +94,11 @@ function load_row_matrice(file_path::String)
 
         for i in 1:size
             if i <= sub_size
-                dim = 3 * sub_size
+                dim = 2 * sub_size
             elseif i > size - sub_size
                 dim = sub_size + 1
             else
-                dim = sub_size * 3 + 1
+                dim = sub_size * 2 + 1
             end
             
             vector = vec(zeros(dim))

@@ -36,6 +36,13 @@ function LU_decomposition(A; partial_choice::Bool = false)
             
             # Swap i-th row with k-th
             if idx != k
+                
+                # If swap between sections - extend row to have additional
+                # l zeros at the end
+                if k % 4 == 0
+                    z = zeros(l)
+                    A.data[k] = [A.data[k], z]
+                end
 
                 temp_A = A.data[k]
                 A.data[k] = A.data[idx]
@@ -84,16 +91,18 @@ function LU_gauss_elimination(A, P::Vector, b::Vector)
     n = A.size
     x = Vector{Float64}(undef, length(b))
 
-    # Iterate from first row to apply permutation - O(n)
+    # Solving Ly=b and applying permutation vector - O(n)
     for k in 1:n
         x[k] = b[P[k]]
 
+        # Iterate over columns, only up to 3*l - O(l)
+        # Longest row in array has 3*l columns due to possible swaps
         for j in (A.shift[k] + 1):(k-1)
             x[k] -= A.data[k][j - A.shift[k]] * x[j]
         end 
     end
 
-    # Iterate from last row up - O(n)
+    # Solving Ux=y - O(n)
     for k in reverse(1:n)
     
         end_col = min(A.shift[k] + length(A.data[k]), n)
@@ -143,6 +152,13 @@ function gauss_elimination(A, b::Vector; partial_choice::Bool = false)
             
             # Swap i-th row with k-th
             if idx != k
+                
+                # If swap between sections - extend row to have additional
+                # l zeros at the end
+                if k % 4 == 0
+                    z = zeros(l)
+                    A.data[k] = [A.data[k], z]
+                end
 
                 temp_A = A.data[k]
                 A.data[k] = A.data[idx]
