@@ -65,8 +65,8 @@ function gauss_elimination(A, b::Vector; partial_choice::Bool = false)
             m = A.data[i][k - A.shift[i]] / A.data[k][k - A.shift[k]]
             cols = min(A.shift[k] + length(A.data[k]), n)
             
-            # Third loop needs to update only up to 3*l - O(l)
-            # Longest row in array has 3*l columns due to possible swaps
+            # Third loop needs to update only up to 2*l - O(l)
+            # Longest row in array has 2*l columns due to possible swaps
             for j in (k + 1):cols
                 A.data[i][j - A.shift[i]] -= m * A.data[k][j - A.shift[k]]
             end
@@ -85,8 +85,8 @@ function gauss_elimination(A, b::Vector; partial_choice::Bool = false)
         x[k] = b[k]
         end_col = min(A.shift[k] + length(A.data[k]), n)
 
-        # Iterate over columns, only up to 3*l - O(l)
-        # Longest row in array has 3*l columns due to possible swaps
+        # Iterate over columns, only up to 2*l - O(l)
+        # Longest row in array has 2*l columns due to possible swaps
         for j in (k + 1):end_col
             x[k] -= A.data[k][j - A.shift[k]] * x[j]
         end
@@ -168,8 +168,8 @@ function LU_decomposition(A; partial_choice::Bool = false)
             A.data[i][k - A.shift[i]] /= d 
             cols = min(A.shift[k] + length(A.data[k]), n)
             
-            # Third loop needs to update only up to 3*l - O(l)
-            # Longest row in array has 3*l columns due to possible swaps
+            # Third loop needs to update only up to 2*l - O(l)
+            # Longest row in array has 2*l columns due to possible swaps
             for j in (k + 1):cols
 
                 # Apply Schur complement
@@ -192,8 +192,8 @@ function LU_gauss_elimination(A, P::Vector, b::Vector)
     for k in 1:n
         x[k] = b[P[k]]
 
-        # Iterate over columns, only up to 3*l - O(l)
-        # Longest row in array has 3*l columns due to possible swaps
+        # Iterate over columns, only up to 2*l - O(l)
+        # Longest row in array has 2*l columns due to possible swaps
         for j in (A.shift[k] + 1):(k-1)
             x[k] -= A.data[k][j - A.shift[k]] * x[j]
         end 
@@ -204,8 +204,8 @@ function LU_gauss_elimination(A, P::Vector, b::Vector)
     
         end_col = min(A.shift[k] + length(A.data[k]), n)
 
-        # Iterate over columns, only up to 3*l - O(l)
-        # Longest row in array has 3*l columns due to possible swaps
+        # Iterate over columns, only up to 2*l - O(l)
+        # Longest row in array has 2*l columns due to possible swaps
         for j in (k + 1):end_col
             x[k] -= A.data[k][j - A.shift[k]] * x[j]
         end
