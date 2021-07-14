@@ -1,11 +1,6 @@
-# Eliminacja Gaussa
+# Gauss elimination for specific sparse matrices
 
-Struktura projektu:
-* matrixgen.jl - moduł od wykładowcy do generowania macierzy
-* blocksys.jl - moduł posiadający algorytmy eliminacji Gaussa i rozkładu LU
-* launchers.jl - moduł posiadający funkcje umożliwiające odpalanie algorytmów przy użyciu wejścia z pliku
-* data_structs.jl - moduł posiadający strukturę macierzy oraz funkcje ładujące maceirzez z pliku do pamięci
-* utils.jl - moduł posiadający funkcje pomocnicze
-* Benchmark.ipynb - jupyter notebook z pokazanym przebiegiem benchmarków na algorytmach
-* Test.ipynb - jupyter notebook ze skryptami umożliwiającymi odpalanie programów
-* Sprawozdanie_Patryk_Rygiel.pdf - wykonanane sprawozdanie w pdf'ie
+Project for course "Scientific computations" written in Julia language.
+
+This project implements gauss elimination algorithm optimized for certain type of sparse matrices (defined in task description).
+Due to optimization to given task algorithm is linear in time O(n) instead of cubic O(n^3) as classic gauss elimination.
